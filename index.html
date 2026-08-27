@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#00559F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="帳戶情報">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>帳戶情報系統 v3｜台積電生態系</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#EDF1F4;--panel:#FFF;--rail:#D3DCE3;--soft:#E4EAEF;
+--ink:#141E28;--ink2:#3D4C59;--muted:#77858F;--faint:#9AA6AF;
+--blue:#00559F;--run:#2E7D32;--warn:#C77C13;--fault:#B23A2E;--violet:#6B4E9B;--teal:#0F7A72;--slate:#334654}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:"Noto Sans TC",system-ui,-apple-system,"PingFang TC",sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:14px 12px 96px}
+.hd{background:var(--panel);border:1px solid var(--rail);border-radius:3px;padding:13px 15px;margin-bottom:10px;position:relative}
+.hd::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--blue) 0 55%,var(--run) 55% 100%)}
+.eb{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;font-weight:600}
+h1{font-family:"Barlow Condensed","Noto Sans TC",sans-serif;font-size:27px;line-height:1;font-weight:700;margin:3px 0 1px}
+.zh{font-weight:900;font-size:17px;letter-spacing:-.02em;margin:0}
+.tabs{display:flex;gap:4px;overflow-x:auto;margin-bottom:11px;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+.tab{flex:none;padding:9px 13px;font-size:12.5px;font-weight:700;color:var(--ink2);background:var(--panel);border:1px solid var(--rail);border-radius:3px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.tab.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.tab .b{display:inline-block;margin-left:5px;font-family:"IBM Plex Mono",monospace;font-size:9.5px;opacity:.75}
+.card{background:var(--panel);border:1px solid var(--rail);border-radius:3px;padding:13px 14px;margin-bottom:10px}
+.card h2{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;font-weight:600}
+label{display:block;font-size:11.5px;font-weight:700;color:#22303C;margin:8px 0 3px}
+input,select,textarea{width:100%;padding:9px 10px;font-size:13.5px;font-family:inherit;color:var(--ink);border:1px solid var(--rail);border-radius:3px;background:#FCFDFE;outline:none}
+textarea{resize:vertical;line-height:1.6;min-height:38px}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,85,159,.09);background:#fff}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+@media(max-width:560px){.g2,.g3{grid-template-columns:1fr}}
+.btn{padding:10px 14px;font-size:11.5px;font-weight:600;letter-spacing:.04em;color:var(--ink2);background:var(--panel);border:1px solid var(--rail);border-radius:3px;cursor:pointer;font-family:"IBM Plex Mono",monospace;white-space:nowrap}
+.btn:hover{border-color:var(--blue);color:var(--blue)}
+.btn.p{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn.p:hover{background:#00447F;color:#fff}
+.btn.d{color:var(--fault);border-color:#E8CFCB}
+.btn.sm{padding:5px 9px;font-size:10px}
+.row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+#raw{min-height:130px;font-size:15px;line-height:1.75}
+.ib{border:1px solid var(--soft);border-left:3px solid var(--warn);border-radius:3px;padding:10px 11px;margin-bottom:7px;background:#FFFDF8}
+.ib.done{border-left-color:var(--run);background:#F6FAF6;opacity:.62}
+.ib-t{font-size:13.5px;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+.ib-m{font-family:"IBM Plex Mono",monospace;font-size:9.5px;color:var(--faint);margin-top:5px}
+.att{display:inline-flex;align-items:center;gap:4px;font-size:11px;background:#EAF1F7;color:#00447F;padding:3px 7px;border-radius:2px;margin:5px 5px 0 0;text-decoration:none;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}
+.ck{position:relative}
+.ck input{position:absolute;opacity:0;pointer-events:none}
+.ck span{display:inline-block;padding:6px 9px;font-size:11px;font-weight:600;border:1px solid var(--rail);border-radius:3px;cursor:pointer;background:#FCFDFE;color:var(--ink2)}
+.ck input:checked+span{background:var(--blue);color:#fff;border-color:var(--blue)}
+.ck.fac input:checked+span{background:var(--run);border-color:var(--run)}
+.chip{font-family:"IBM Plex Mono",monospace;font-size:9px;font-weight:600;padding:2px 6px;border-radius:2px;display:inline-block}
+.c1{background:#E0EBF5;color:#00447F}.c2{background:#E6EFE6;color:#1F6323}
+.c3{background:#FBEDD8;color:#8A5405}.c4{background:#F6E4EE;color:#8A2557}
+.c5{background:#EEE9F5;color:#4E3778}.c6{background:#F0F1F2;color:#4C5A66}
+.c7{background:#FAE0DC;color:#8C2C21}
+.ent{border:1px solid var(--rail);border-left:4px solid var(--ec,var(--rail));border-radius:3px;padding:10px 11px;margin-bottom:7px;background:#fff}
+.ent-n{font-size:14px;font-weight:700}
+.ent-s{font-size:11.5px;color:var(--muted);margin-top:1px}
+.ent-b{font-size:11.5px;color:var(--ink2);margin-top:6px;line-height:1.6}
+.ent-b b{color:var(--warn);font-weight:600}
+.ent-f{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink2);margin-top:5px;line-height:1.7}
+.mini{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+a.lnk{color:var(--blue);text-decoration:none;font-weight:600}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{background:var(--blue);color:#fff;font-weight:700;text-align:left;padding:7px 8px;font-size:11px;white-space:nowrap}
+.tbl th.g{background:var(--run)}
+.tbl td{padding:7px 8px;border-bottom:1px solid var(--soft);vertical-align:top;line-height:1.55}
+.tbl tr:nth-child(even) td{background:#F7F9FB}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -14px;padding:0 14px}
+.alert{border-left:4px solid var(--fault);background:#FDF6F5;padding:9px 11px;border-radius:3px;font-size:12.5px;line-height:1.7;margin-bottom:7px;color:#7A2A20}
+.alert.ok{border-left-color:var(--run);background:#F4F9F4;color:#1F5522}
+.alert.info{border-left-color:var(--blue);background:#F4F8FC;color:#00447F}
+.alert b{font-weight:700}
+.empty{padding:24px 10px;text-align:center;color:var(--muted);font-size:13px}
+.hint{font-size:11px;color:var(--muted);line-height:1.6;margin-top:3px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97);border-top:1px solid var(--rail);padding:8px 12px;display:flex;gap:6px;justify-content:center;backdrop-filter:blur(8px);z-index:9}
+#out{min-height:200px;font-family:"IBM Plex Mono",monospace;font-size:11px;line-height:1.65}
+.trk{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:2px;margin-right:6px}
+.trk.f{background:#E6EFE6;color:#1F6323}
+.trk.p{background:#EEE9F5;color:#4E3778}
+.gh{font-size:12.5px;font-weight:700;color:var(--slate);margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--soft)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hd">
+  <div class="eb">ADVANTECH · ACCOUNT INTELLIGENCE · v3 雙軌</div>
+  <h1>ACCOUNT INTEL</h1>
+  <div class="zh">台積電生態系情報系統</div>
+  <div id="stMsg" style="font-size:11px;color:#B23A2E;margin-top:4px"></div>
+</div>
+<div class="tabs" id="tabs"></div>
+<div id="view"></div>
+</div>
+<div class="bar">
+  <button class="btn" id="bExp">匯出備份</button>
+  <button class="btn" id="bImp">匯入</button>
+  <button class="btn p" id="bInbox">＋ 快記</button>
+</div>
+
+<script>
+const K='adv_intel_v4';
+let D={inbox:[],companies:[],people:[],fabs:[],opps:[],visits:[],log:[]};
+let tab='inbox', edit={};
+
+const CTYPE=['廠務統包/機電','廠務子系統','FMCS/監控整合','AMHS/物流自動化','能源/環安監測',
+ '設備商-台系','設備商-進口','視覺檢測','軟體ISV','通路商','終端客戶','其他'];
+const CCOL={'廠務統包/機電':'var(--teal)','廠務子系統':'var(--run)','FMCS/監控整合':'var(--blue)',
+ 'AMHS/物流自動化':'var(--warn)','能源/環安監測':'var(--run)','設備商-台系':'var(--slate)',
+ '設備商-進口':'var(--violet)','視覺檢測':'var(--warn)','軟體ISV':'var(--slate)',
+ '通路商':'var(--muted)','終端客戶':'var(--fault)','其他':'var(--rail)'};
+
+/* 雙軌：廠務段（主戰場）／製程段（多數打不到） */
+const FAC=['空調/無塵室 HVAC-MAU-FFU','超純水 UPW','廢水處理','廢氣處理','大宗氣體','特殊氣體',
+ '化學品供應 CCSS','電力/受電/UPS','FMCS 廠務中控','EMS 能源管理','AMHS 天車搬運','環境安全監測','消防/氣體偵測'];
+const PROC=['微影曝光','塗佈顯影','蝕刻','薄膜沉積','ALD','CMP','離子植入','擴散熱製程','清洗','量測檢測','測試','封裝'];
+
+const DECLOC=['台灣','日本','荷蘭','美國','韓國','其他','未知'];
+const PHASE=['土建','機電','廠務','設備搬入','試產','量產','未知'];
+const ROLES=[{k:'eb',n:'決策者',c:'c3'},{k:'tb',n:'技術把關',c:'c1'},{k:'ub',n:'使用單位',c:'c2'},{k:'co',n:'內部教練',c:'c4'},{k:'gk',n:'守門人',c:'c5'}];
+const STANCE={3:['支持','c2'],2:['中立','c6'],1:['反對','c7'],0:['未知','c3']};
+const RELN=['未接觸','見過面','熟識','信任'];
+const STAGE=['情報','接觸中','需求確認','PoC/送樣','報價','成交','失單'];
+const SCOL={'情報':'c6','接觸中':'c1','需求確認':'c3','PoC/送樣':'c5','報價':'c4','成交':'c2','失單':'c7'};
+
+const uid=p=>p+Math.random().toString(36).slice(2,8);
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const co=id=>D.companies.find(x=>x.id===id);
+const fb=id=>D.fabs.find(x=>x.id===id);
+const isUrl=s=>/^https?:\/\//i.test(String(s||'').trim());
+const isFac=c=>(c.fac||[]).length>0;
+const isProc=c=>(c.proc||[]).length>0;
+
+function zodiac(md){
+  const p=String(md).split('-'); const m=+p[0], d=+p[1];
+  if(!m||!d)return '';
+  const cut=[[20,'摩羯','射手'],[19,'水瓶','摩羯'],[21,'雙魚','水瓶'],[20,'牡羊','雙魚'],[21,'金牛','牡羊'],[22,'雙子','金牛'],
+    [23,'巨蟹','雙子'],[23,'獅子','巨蟹'],[23,'處女','獅子'],[24,'天秤','處女'],[23,'天蠍','天秤'],[22,'射手','天蠍']][m-1];
+  return d>=cut[0]?cut[1]:cut[2];
+}
+
+/* 儲存層：localStorage 為主（GitHub Pages / 手機都能用），
+   window.storage 只在 Claude 預覽環境內當備援同步 */
+let STOK=true;
+async function save(){
+  const v=JSON.stringify(D);
+  try{localStorage.setItem(K,v);STOK=true}catch(e){STOK=false}
+  try{if(window.storage&&window.storage.set)await window.storage.set(K,v)}catch(e){}
+  const el=document.getElementById('stMsg');
+  if(el)el.textContent=STOK?'':'⚠ 無法寫入本機儲存，請勿使用無痕模式';
+}
+async function load(){
+  let v=null;
+  try{v=localStorage.getItem(K)}catch(e){STOK=false}
+  if(!v){try{const r=await window.storage.get(K);if(r&&r.value)v=r.value}catch(e){}}
+  if(v){try{D=Object.assign(D,JSON.parse(v))}catch(e){}}
+}
+
+const TABS=[['inbox','收件匣',()=>D.inbox.filter(i=>!i.done).length],
+ ['vi','拜訪',()=>D.visits.length],['dr','日報',()=>null],
+ ['co','公司',()=>D.companies.length],['pe','人',()=>D.people.length],
+ ['fa','廠區',()=>D.fabs.length],['op','機會',()=>D.opps.length],['rp','報表',()=>null]];
+
+function tabsHTML(){
+  document.getElementById('tabs').innerHTML=TABS.map(t=>{
+    const n=t[2]();
+    return `<button class="tab ${tab===t[0]?'on':''}" data-tab="${t[0]}">${t[1]}${n!==null&&n>0?`<span class="b">${n}</span>`:''}</button>`;
+  }).join('');
+  document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;edit={};render()});
+}
+
+function vInbox(){
+  const pend=D.inbox.filter(i=>!i.done), dn=D.inbox.filter(i=>i.done);
+  return `<div class="card">
+   <h2>快記 — 想到什麼就丟</h2>
+   <textarea id="raw" placeholder="散記、逐字稿、會議重點都可以貼進來"></textarea>
+   <div class="g2">
+     <div><label>附件參考（檔名或雲端連結）</label><input id="attn" placeholder="Recording_0901.m4a 或 https://drive..."></div>
+     <div><label>來源</label><select id="atts"><option>手記</option><option>錄音逐字稿</option><option>會議紀錄</option><option>Email</option><option>文件</option><option>其他</option></select></div>
+   </div>
+   <div class="row"><button class="btn p" id="addRaw">存入收件匣</button></div>
+   <div class="alert info" style="margin-top:11px"><b>錄音：</b>Pixel 逐字稿全文貼進上框，音檔留雲端、連結貼附件欄。要自動拆成結構化資料，把全文貼給 Claude 產生 JSON 後用「匯入」。</div>
+  </div>
+  <div class="card"><h2>待整理 ${pend.length}</h2>
+   ${pend.length?pend.map(i=>`<div class="ib">
+     <div class="ib-t">${esc(i.t)}</div>
+     ${i.att?`<div>${isUrl(i.att)?`<a class="att" href="${esc(i.att)}" target="_blank" rel="noopener">🔗 ${esc(i.att).slice(0,44)}</a>`:`<span class="att">📎 ${esc(i.att)}</span>`}</div>`:''}
+     <div class="ib-m">${i.d}${i.src?' · '+esc(i.src):''}</div>
+     <div class="row">
+       <button class="btn sm" data-toco="${i.id}">→ 公司</button><button class="btn sm" data-tope="${i.id}">→ 人</button>
+       <button class="btn sm" data-tofa="${i.id}">→ 廠區</button><button class="btn sm" data-toop="${i.id}">→ 機會</button>
+       <button class="btn sm" data-tovi="${i.id}">→ 拜訪</button>
+       <button class="btn sm" data-ibdone="${i.id}">完成</button><button class="btn sm d" data-ibdel="${i.id}">刪</button>
+     </div></div>`).join(''):'<div class="empty">收件匣清空了</div>'}
+  </div>
+  ${dn.length?`<div class="card"><h2>已整理 ${dn.length}（近 8 筆）</h2>
+    ${dn.slice(-8).reverse().map(i=>`<div class="ib done"><div class="ib-t">${esc(i.t).slice(0,150)}${i.t.length>150?'…':''}</div>
+    <div class="ib-m">${i.d}<button class="btn sm d" style="margin-left:8px" data-ibdel="${i.id}">刪</button></div></div>`).join('')}</div>`:''}`;
+}
+
+function vCo(){
+  const e=edit.co||{};
+  return `<div class="card">
+   <h2>${e.id?'編輯公司':'新增公司'}</h2>
+   <div class="g2">
+    <div><label>公司名稱</label><input id="c_name" value="${esc(e.name)}"></div>
+    <div><label>類型</label><select id="c_type">${CTYPE.map(t=>`<option ${e.type===t?'selected':''}>${t}</option>`).join('')}</select></div>
+   </div>
+   <div class="g2">
+    <div><label>官網</label><input id="c_web" value="${esc(e.web)}" placeholder="https://..."></div>
+    <div><label>地址</label><input id="c_addr" value="${esc(e.addr)}"></div>
+   </div>
+   <div class="g3">
+    <div><label>實收資本額</label><input id="c_cap" value="${esc(e.cap)}"></div>
+    <div><label>員工人數</label><input id="c_emp" value="${esc(e.emp)}"></div>
+    <div><label>近一年營收</label><input id="c_rev" value="${esc(e.rev)}"></div>
+   </div>
+   <div class="hint">上市櫃可在公開資訊觀測站查資本額、員工數、營收與主要客戶揭露</div>
+
+   <div class="gh"><span class="trk f">廠務段</span>主戰場 — 台灣設計、台灣發包、台灣決定</div>
+   <label>負責哪些廠務系統（可複選）</label>
+   <div class="chips">${FAC.map(s=>`<label class="ck fac"><input type="checkbox" class="c_fac" value="${s}" ${(e.fac||[]).includes(s)?'checked':''}><span>${s}</span></label>`).join('')}</div>
+
+   <div class="gh"><span class="trk p">製程段</span>多數選型在海外 — 主要盯既有機台 refresh</div>
+   <label>負責哪些製程站別（可複選）</label>
+   <div class="chips">${PROC.map(s=>`<label class="ck"><input type="checkbox" class="c_proc" value="${s}" ${(e.proc||[]).includes(s)?'checked':''}><span>${s}</span></label>`).join('')}</div>
+
+   <div class="gh">決策與現況</div>
+   <label>服務哪些廠區（可複選）</label>
+   <div class="chips">${D.fabs.length?D.fabs.map(f=>`<label class="ck"><input type="checkbox" class="c_fb" value="${f.id}" ${(e.fabs||[]).includes(f.id)?'checked':''}><span>${esc(f.name)}</span></label>`).join(''):'<span class="hint">還沒建廠區</span>'}</div>
+   <div class="g3">
+    <div><label>運算/控制器選型地點</label><select id="c_loc">${DECLOC.map(t=>`<option ${e.loc===t?'selected':''}>${t}</option>`).join('')}</select>
+      <div class="hint">非台灣＝這條線不用打</div></div>
+    <div><label>目前用誰的控制器/IPC</label><input id="c_ipc" value="${esc(e.ipc)}" placeholder="凌華／Beckhoff／西門子／白牌"></div>
+    <div><label>是否已是研華客戶</label><select id="c_adv">
+      <option value="" ${!e.adv?'selected':''}>未知</option>
+      <option value="yes" ${e.adv==='yes'?'selected':''}>是（有出貨）</option>
+      <option value="no" ${e.adv==='no'?'selected':''}>否</option></select></div>
+   </div>
+   <div class="g2">
+    <div><label>OS／韌體現況（refresh 時機判斷）</label><input id="c_os" value="${esc(e.os)}" placeholder="Win10 LTSC 2021，2027 EOL"></div>
+    <div><label>下次標案／改版時程</label><input id="c_next" value="${esc(e.next)}" placeholder="2027 Q1 發包"></div>
+   </div>
+   <label>痛點／備註</label><textarea id="c_note">${esc(e.note)}</textarea>
+   <div class="row"><button class="btn p" id="coSave">${e.id?'儲存':'新增'}</button>${e.id?'<button class="btn" id="coCancel">取消</button>':''}</div>
+  </div>
+  <div class="card"><h2>公司 ${D.companies.length}　<span style="color:var(--run)">廠務 ${D.companies.filter(isFac).length}</span> · <span style="color:var(--violet)">製程 ${D.companies.filter(isProc).length}</span></h2>
+   ${D.companies.length?D.companies.map(c=>{
+     const ppl=D.people.filter(p=>p.co===c.id);
+     const facts=[c.cap?'資本 '+esc(c.cap):'',c.emp?'員工 '+esc(c.emp):'',c.rev?'營收 '+esc(c.rev):''].filter(Boolean).join('　');
+     return `<div class="ent" style="--ec:${CCOL[c.type]||'var(--rail)'}">
+      <div class="ent-n">${isFac(c)?'<span class="trk f">廠務</span>':''}${isProc(c)?'<span class="trk p">製程</span>':''}${esc(c.name)}${c.web?` <a class="lnk" href="${esc(c.web)}" target="_blank" rel="noopener" style="font-size:11px">官網↗</a>`:''}</div>
+      <div class="ent-s">${esc(c.type)}${c.loc&&c.loc!=='未知'?'｜決策：'+esc(c.loc):''}${c.ipc?'｜現用：'+esc(c.ipc):''}</div>
+      ${facts?`<div class="ent-f">${facts}</div>`:''}
+      ${c.os||c.next?`<div class="ent-f">${c.os?'OS：'+esc(c.os):''}${c.next?'　下次：'+esc(c.next):''}</div>`:''}
+      <div class="mini">
+       ${c.adv==='yes'?'<span class="chip c2">研華既有客戶</span>':c.adv==='no'?'<span class="chip c7">尚未合作</span>':''}
+       ${(c.fac||[]).slice(0,3).map(s=>`<span class="chip c2">${s}</span>`).join('')}
+       ${(c.proc||[]).slice(0,3).map(s=>`<span class="chip c5">${s}</span>`).join('')}
+       ${(c.fabs||[]).map(f=>{const F=fb(f);return F?`<span class="chip c1">${esc(F.name)}</span>`:''}).join('')}
+       <span class="chip c6">窗口 ${ppl.length}</span>
+      </div>
+      ${c.note?`<div class="ent-b">${esc(c.note)}</div>`:''}
+      <div class="row"><button class="btn sm" data-coed="${c.id}">編輯</button><button class="btn sm d" data-codel="${c.id}">刪</button></div>
+     </div>`}).join(''):'<div class="empty">還沒有公司</div>'}
+  </div>`;
+}
+
+function vPe(){
+  const e=edit.pe||{};
+  return `<div class="card">
+   <h2>${e.id?'編輯人物':'新增人物'}</h2>
+   <div class="g2">
+    <div><label>姓名</label><input id="p_name" value="${esc(e.name)}"></div>
+    <div><label>所屬公司</label><select id="p_co"><option value="">（未指定）</option>
+      ${D.companies.map(c=>`<option value="${c.id}" ${e.co===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div>
+   </div>
+   <div class="g3">
+    <div><label>部門</label><input id="p_dept" value="${esc(e.dept)}"></div>
+    <div><label>職稱</label><input id="p_title" value="${esc(e.title)}"></div>
+    <div><label>所屬辦公室／廠區</label><input id="p_office" value="${esc(e.office)}"></div>
+   </div>
+   <div class="g2">
+    <div><label>聯絡電話</label><input id="p_tel" type="tel" value="${esc(e.tel)}"></div>
+    <div><label>Email</label><input id="p_mail" type="email" value="${esc(e.mail)}"></div>
+   </div>
+   <label>角色（可複選）</label>
+   <div class="chips">${ROLES.map(r=>`<label class="ck"><input type="checkbox" class="p_role" value="${r.k}" ${(e.roles||[]).includes(r.k)?'checked':''}><span>${r.n}</span></label>`).join('')}</div>
+   <div class="g2">
+    <div><label>對我方態度</label><select id="p_stance">${[0,3,2,1].map(v=>`<option value="${v}" ${String(e.stance)===String(v)?'selected':''}>${STANCE[v][0]}</option>`).join('')}</select></div>
+    <div><label>關係熱度</label><select id="p_rel">${RELN.map((n,i)=>`<option value="${i}" ${String(e.rel)===String(i)?'selected':''}>${n}</option>`).join('')}</select></div>
+   </div>
+   <label>他被什麼考核／最在意什麼</label><textarea id="p_kpi">${esc(e.kpi)}</textarea>
+   <div class="g2">
+    <div><label>生日（月-日）</label><input id="p_bd" value="${esc(e.bd)}" placeholder="03-15">
+      <div class="hint" id="zodOut">${e.bd?'星座：'+zodiac(e.bd):'填了會自動判斷星座'}</div></div>
+    <div><label>興趣／嗜好</label><input id="p_hobby" value="${esc(e.hobby)}"></div>
+   </div>
+   <label>備註</label><textarea id="p_note">${esc(e.note)}</textarea>
+   <div class="row"><button class="btn p" id="peSave">${e.id?'儲存':'新增'}</button>${e.id?'<button class="btn" id="peCancel">取消</button>':''}</div>
+  </div>
+  <div class="card"><h2>人物 ${D.people.length}</h2>
+   ${D.people.length?D.people.map(p=>{
+     const c=co(p.co),st=STANCE[p.stance||0];
+     const contact=[p.tel?`<a class="lnk" href="tel:${esc(p.tel)}">${esc(p.tel)}</a>`:'',p.mail?`<a class="lnk" href="mailto:${esc(p.mail)}">${esc(p.mail)}</a>`:''].filter(Boolean).join('　');
+     const soft=[p.bd?esc(p.bd)+' '+zodiac(p.bd):'',p.hobby?esc(p.hobby):''].filter(Boolean).join('　');
+     return `<div class="ent" style="--ec:${p.stance==='3'?'var(--run)':p.stance==='1'?'var(--fault)':'var(--rail)'}">
+      <div class="ent-n">${esc(p.name)}</div>
+      <div class="ent-s">${c?esc(c.name)+'｜':''}${esc(p.dept)}${p.title?'／'+esc(p.title):''}${p.office?'｜'+esc(p.office):''}</div>
+      ${contact?`<div class="ent-f">${contact}</div>`:''}
+      <div class="mini">${(p.roles||[]).map(r=>{const R=ROLES.find(x=>x.k===r);return R?`<span class="chip ${R.c}">${R.n}</span>`:''}).join('')}
+       <span class="chip ${st[1]}">${st[0]}</span><span class="chip c6">${RELN[p.rel||0]}</span></div>
+      ${p.kpi?`<div class="ent-b"><b>在意：</b>${esc(p.kpi)}</div>`:''}
+      ${soft?`<div class="ent-b">🎂 ${soft}</div>`:''}
+      ${p.note?`<div class="ent-b">${esc(p.note)}</div>`:''}
+      <div class="row"><button class="btn sm" data-peed="${p.id}">編輯</button><button class="btn sm d" data-pedel="${p.id}">刪</button></div>
+     </div>`}).join(''):'<div class="empty">還沒有人物</div>'}
+  </div>`;
+}
+
+function vFa(){
+  const e=edit.fa||{};
+  return `<div class="card">
+   <h2>${e.id?'編輯廠區':'新增廠區'}</h2>
+   <div class="g3">
+    <div><label>廠區代號</label><input id="f_name" value="${esc(e.name)}" placeholder="F20 P1"></div>
+    <div><label>地點</label><input id="f_loc" value="${esc(e.loc)}" placeholder="新竹寶山"></div>
+    <div><label>製程節點</label><input id="f_node" value="${esc(e.node)}" placeholder="2nm"></div>
+   </div>
+   <div class="g2">
+    <div><label>目前工程階段</label><select id="f_ph">${PHASE.map(p=>`<option ${e.ph===p?'selected':''}>${p}</option>`).join('')}</select>
+      <div class="hint">採購跟著階段走，提前一到兩階段卡位</div></div>
+    <div><label>量產目標時間</label><input id="f_mp" value="${esc(e.mp)}" placeholder="2027 H2"></div>
+   </div>
+   <label>廠務標案時程／發包狀況</label><textarea id="f_buy">${esc(e.buy)}</textarea>
+   <label>研華目前進去什麼</label><textarea id="f_adv">${esc(e.adv)}</textarea>
+   <label>備註（資料來源：環評報告、法說會、新聞）</label><textarea id="f_note">${esc(e.note)}</textarea>
+   <div class="row"><button class="btn p" id="faSave">${e.id?'儲存':'新增'}</button>${e.id?'<button class="btn" id="faCancel">取消</button>':''}</div>
+  </div>
+  <div class="card"><h2>廠區 ${D.fabs.length}</h2>
+   ${D.fabs.length?D.fabs.map(f=>{
+     const cs=D.companies.filter(c=>(c.fabs||[]).includes(f.id));
+     return `<div class="ent" style="--ec:var(--violet)">
+      <div class="ent-n">${esc(f.name)}</div>
+      <div class="ent-s">${esc(f.loc)}${f.node?'｜'+esc(f.node):''}${f.mp?'｜量產 '+esc(f.mp):''}</div>
+      <div class="mini"><span class="chip c3">${esc(f.ph||'未知')}</span><span class="chip c6">SI ${cs.length}</span></div>
+      ${f.buy?`<div class="ent-b"><b>標案：</b>${esc(f.buy)}</div>`:''}
+      ${f.adv?`<div class="ent-b">研華：${esc(f.adv)}</div>`:''}
+      <div class="row"><button class="btn sm" data-faed="${f.id}">編輯</button><button class="btn sm d" data-fadel="${f.id}">刪</button></div>
+     </div>`}).join(''):'<div class="empty">還沒有廠區。先從環評報告、法說會建 13 個新廠</div>'}
+  </div>`;
+}
+
+function vOp(){
+  const e=edit.op||{};
+  return `<div class="card">
+   <h2>${e.id?'編輯機會':'新增機會'}</h2>
+   <label>機會名稱</label><input id="o_t" value="${esc(e.t)}" placeholder="F20 FMCS 監控主機">
+   <div class="g3">
+    <div><label>公司</label><select id="o_co"><option value="">（未指定）</option>${D.companies.map(c=>`<option value="${c.id}" ${e.co===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div>
+    <div><label>廠區</label><select id="o_fa"><option value="">（未指定）</option>${D.fabs.map(f=>`<option value="${f.id}" ${e.fa===f.id?'selected':''}>${esc(f.name)}</option>`).join('')}</select></div>
+    <div><label>階段</label><select id="o_sg">${STAGE.map(s=>`<option ${e.sg===s?'selected':''}>${s}</option>`).join('')}</select></div>
+   </div>
+   <div class="g3">
+    <div><label>軌道</label><select id="o_trk">
+      <option value="fac" ${e.trk==='fac'?'selected':''}>廠務段（新建/擴建）</option>
+      <option value="ref" ${e.trk==='ref'?'selected':''}>既有機台 refresh</option>
+      <option value="proc" ${e.trk==='proc'?'selected':''}>製程段 design-in</option></select></div>
+    <div><label>產品線／方案</label><input id="o_pd" value="${esc(e.pd)}" placeholder="IPC-5120 / ADAM / iEMS"></div>
+    <div><label>預估金額</label><input id="o_v" value="${esc(e.v)}"></div>
+   </div>
+   <label>下一步與時程</label><textarea id="o_next">${esc(e.next)}</textarea>
+   <label>備註（競爭、卡點）</label><textarea id="o_note">${esc(e.note)}</textarea>
+   <div class="row"><button class="btn p" id="opSave">${e.id?'儲存':'新增'}</button>${e.id?'<button class="btn" id="opCancel">取消</button>':''}</div>
+  </div>
+  <div class="card"><h2>機會 ${D.opps.length}</h2>
+   ${D.opps.length?D.opps.map(o=>{
+     const c=co(o.co),f=fb(o.fa);
+     const tn={fac:'廠務',ref:'Refresh',proc:'製程'}[o.trk]||'';
+     return `<div class="ent" style="--ec:var(--warn)">
+      <div class="ent-n">${tn?`<span class="trk ${o.trk==='proc'?'p':'f'}">${tn}</span>`:''}${esc(o.t)}</div>
+      <div class="ent-s">${c?esc(c.name):'—'}${f?'｜'+esc(f.name):''}${o.pd?'｜'+esc(o.pd):''}</div>
+      <div class="mini"><span class="chip ${SCOL[o.sg]||'c6'}">${esc(o.sg)}</span>${o.v?`<span class="chip c6">${esc(o.v)}</span>`:''}</div>
+      ${o.next?`<div class="ent-b"><b>下一步：</b>${esc(o.next)}</div>`:''}
+      ${o.note?`<div class="ent-b">${esc(o.note)}</div>`:''}
+      <div class="row"><button class="btn sm" data-oped="${o.id}">編輯</button><button class="btn sm d" data-opdel="${o.id}">刪</button></div>
+     </div>`}).join(''):'<div class="empty">還沒有機會</div>'}
+  </div>`;
+}
+
+function vRp(){
+  const a=[];
+  const facCo=D.companies.filter(isFac);
+  const noWin=D.companies.filter(c=>!D.people.some(p=>p.co===c.id));
+  const one=D.companies.filter(c=>D.people.filter(p=>p.co===c.id).length===1);
+  const advNo=D.companies.filter(c=>c.adv==='yes'&&!D.opps.some(o=>o.co===c.id));
+  const noCoach=D.companies.filter(c=>D.people.some(p=>p.co===c.id)&&!D.people.some(p=>p.co===c.id&&(p.roles||[]).includes('co')));
+  const facGap=FAC.filter(s=>!D.companies.some(c=>(c.fac||[]).includes(s)));
+  const osRef=D.companies.filter(c=>c.os);
+
+  if(advNo.length)a.push(['ok',`<b>最快的第一單：</b>${advNo.length} 家已是研華客戶但無機會單 — ${advNo.slice(0,6).map(c=>esc(c.name)).join('、')}`]);
+  if(facCo.length)a.push(['ok',`<b>廠務段已覆蓋 ${facCo.length} 家</b>（主戰場）`]);
+  if(facGap.length)a.push(['bad',`<b>廠務系統還有 ${facGap.length} 項沒有任何公司：</b>${facGap.slice(0,8).join('、')}${facGap.length>8?'…':''}`]);
+  if(noWin.length)a.push(['bad',`<b>${noWin.length} 家沒有任何窗口：</b>${noWin.slice(0,6).map(c=>esc(c.name)).join('、')}`]);
+  if(one.length)a.push(['bad',`<b>單一窗口風險 ${one.length} 家：</b>${one.slice(0,6).map(c=>esc(c.name)).join('、')}`]);
+  if(noCoach.length)a.push(['bad',`<b>${noCoach.length} 家沒有內部教練</b>`]);
+  if(!osRef.length)a.push(['bad',`<b>還沒有任何 OS/韌體現況紀錄</b> — refresh 商機要靠這個推算`]);
+  if(!a.length)a.push(['ok','資料還太少，先建幾家公司與窗口']);
+
+  return `<div class="card"><h2>覆蓋率體檢</h2>${a.map(x=>`<div class="alert ${x[0]==='ok'?'ok':''}">${x[1]}</div>`).join('')}</div>
+
+  <div class="card"><h2>表 A — 廠區時程</h2>
+   <div class="scroll"><table class="tbl"><tr><th>廠區</th><th>節點</th><th>階段</th><th>量產</th><th>服務廠商</th><th>研華現況</th></tr>
+   ${D.fabs.length?D.fabs.map(f=>{const cs=D.companies.filter(c=>(c.fabs||[]).includes(f.id));
+     return `<tr><td><b>${esc(f.name)}</b><br><span style="color:var(--muted)">${esc(f.loc)}</span></td>
+     <td>${esc(f.node)}</td><td>${esc(f.ph)}</td><td>${esc(f.mp)}</td>
+     <td>${cs.map(c=>esc(c.name)).join('<br>')||'—'}</td><td>${esc(f.adv)||'—'}</td></tr>`}).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:18px">尚無資料</td></tr>'}
+   </table></div></div>
+
+  <div class="card"><h2>表 B1 — 廠務段 ★主戰場</h2>
+   <div class="scroll"><table class="tbl"><tr><th class="g">系統</th><th class="g">承作廠商</th><th class="g">現用控制器</th><th class="g">研華客戶</th><th class="g">下次時程</th><th class="g">窗口</th></tr>
+   ${(FAC.map(s=>{const cs=D.companies.filter(c=>(c.fac||[]).includes(s));
+     if(!cs.length)return `<tr><td><b>${s}</b></td><td colspan="5" style="color:var(--fault)">尚無資料 — 待蒐集</td></tr>`;
+     return cs.map((c,i)=>`<tr>${i===0?`<td rowspan="${cs.length}"><b>${s}</b></td>`:''}
+      <td>${esc(c.name)}</td><td>${esc(c.ipc)||'—'}</td>
+      <td>${c.adv==='yes'?'<span class="chip c2">是</span>':c.adv==='no'?'否':'?'}</td>
+      <td>${esc(c.next)||'—'}</td>
+      <td>${D.people.filter(p=>p.co===c.id).length||'<span style="color:var(--fault)">0</span>'}</td></tr>`).join('')}).join(''))}
+   </table></div></div>
+
+  <div class="card"><h2>表 B2 — 製程段（判斷打不打得到）</h2>
+   <div class="scroll"><table class="tbl"><tr><th>站別</th><th>設備商</th><th>選型地點</th><th>現用 IPC</th><th>OS/EOL</th><th>結論</th></tr>
+   ${(PROC.map(s=>{const cs=D.companies.filter(c=>(c.proc||[]).includes(s));
+     if(!cs.length)return '';
+     return cs.map((c,i)=>`<tr>${i===0?`<td rowspan="${cs.length}"><b>${s}</b></td>`:''}
+      <td>${esc(c.name)}</td><td>${esc(c.loc||'未知')}</td><td>${esc(c.ipc)||'—'}</td><td>${esc(c.os)||'—'}</td>
+      <td>${c.loc==='台灣'?'<span class="chip c2">可 design-in</span>':c.os?'<span class="chip c3">走 refresh</span>':c.loc&&c.loc!=='未知'?'<span class="chip c7">海外決策</span>':'<span class="chip c6">待查</span>'}</td></tr>`).join('')}).join(''))
+     ||'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:18px">尚無資料</td></tr>'}
+   </table></div></div>
+
+  <div class="card"><h2>表 C — 完整名冊</h2>
+   <div class="scroll"><table class="tbl"><tr><th>公司</th><th>軌道</th><th>類型</th><th>規模</th><th>廠區</th><th>研華</th><th>窗口</th></tr>
+   ${D.companies.length?D.companies.map(c=>{const ppl=D.people.filter(p=>p.co===c.id);
+     return `<tr><td><b>${esc(c.name)}</b></td>
+     <td>${isFac(c)?'<span class="trk f">廠務</span>':''}${isProc(c)?'<span class="trk p">製程</span>':''}</td>
+     <td>${esc(c.type)}</td>
+     <td>${[c.emp?esc(c.emp)+'人':'',c.rev?esc(c.rev):''].filter(Boolean).join('<br>')||'—'}</td>
+     <td>${(c.fabs||[]).map(f=>{const F=fb(f);return F?esc(F.name):''}).join('、')||'—'}</td>
+     <td>${c.adv==='yes'?'是':c.adv==='no'?'否':'?'}</td>
+     <td>${ppl.map(p=>esc(p.name)+'('+RELN[p.rel||0]+')').join('<br>')||'<span style="color:var(--fault)">無</span>'}</td></tr>`}).join(''):'<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:18px">尚無資料</td></tr>'}
+   </table></div></div>
+
+  <div class="card"><h2>文字版匯出</h2><button class="btn p" id="genTxt">產生</button>
+   <textarea id="out" placeholder="產生後可貼進 CRM 或週報"></textarea></div>`;
+}
+
+
+/* ============ 拜訪 ============ */
+const VTYPE=['SI/ISV 拜訪','End User 拜訪','設備商拜訪','電話/線上','展會/研討會','內部會議'];
+const ASK={
+'SI/ISV 拜訪':[
+ ['他在台積電做什麼','負責哪個廠務系統？哪幾個廠區？這一標是統包還是分包？'],
+ ['現在用誰的','控制器/IPC 是哪家？用多久了？當初為什麼選它？'],
+ ['痛在哪','交期？價格？技術支援？認證卡關？停產風險？'],
+ ['下一標什麼時候','發包時程、規格何時定、誰在寫規格'],
+ ['決策怎麼走','誰選型、誰核價、有沒有 AVL 要進'],
+ ['台積電對他的要求','節能目標？資安 E187？碳盤查？供應商評鑑？'],
+ ['他自己的擴張','有沒有跟著出海？其他客戶（聯電、力積電、美光）？']],
+'End User 拜訪':[
+ ['這個部門管什麼','廠務？設備工程？智慧製造？永續？'],
+ ['現有系統','哪些系統在跑、誰建的、滿不滿意'],
+ ['今年的 KPI','他被什麼考核？上面壓什麼下來？'],
+ ['沒解決的問題','人力不足？數據兜不攏？稽核壓力？'],
+ ['預算怎麼來','資本支出還是費用？什麼時候編？'],
+ ['誰能決定','誰提案、誰核准、哪一關最容易卡'],
+ ['對研華的印象','用過嗎？好還是壞？為什麼？']],
+'設備商拜訪':[
+ ['機台在哪設計','台灣有沒有 RD 與選型權？還是海外總部決定？'],
+ ['機台裡裝什麼','IPC 品牌型號、數量、單機用幾台'],
+ ['OS 與生命週期','什麼 OS？何時 EOL？供貨承諾要幾年？'],
+ ['下次改版','機台什麼時候換代？design-in 窗口何時開？'],
+ ['資安要求','客戶要 E187 嗎？他自己過了沒？需要什麼協助？'],
+ ['痛點','缺料？交期？客製彈性？驗證成本？']],
+'電話/線上':[['談了什麼',''],['有沒有新情報',''],['下一步','']],
+'展會/研討會':[['遇到誰',''],['對手在展什麼',''],['值得追的線索','']],
+'內部會議':[['決議事項',''],['我要做什麼',''],['需要誰協助','']]};
+
+function vVi(){
+  const e=edit.vi||{};
+  const t=e.vt||'SI/ISV 拜訪';
+  const list=ASK[t]||[];
+  const today=new Date().toISOString().slice(0,10);
+  return `<div class="card">
+   <h2>${e.id?'編輯拜訪':'新增拜訪'}</h2>
+   <div class="g3">
+    <div><label>日期</label><input type="date" id="v_d" value="${esc(e.d)||today}"></div>
+    <div><label>類型</label><select id="v_vt">${VTYPE.map(x=>`<option ${t===x?'selected':''}>${x}</option>`).join('')}</select>
+      <div class="hint">切換類型會換下方問題清單</div></div>
+    <div><label>公司</label><select id="v_co"><option value="">（未指定）</option>
+      ${D.companies.map(c=>`<option value="${c.id}" ${e.co===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div>
+   </div>
+   <label>廠區（若與特定廠有關）</label>
+   <select id="v_fa"><option value="">（未指定）</option>
+     ${D.fabs.map(f=>`<option value="${f.id}" ${e.fa===f.id?'selected':''}>${esc(f.name)}</option>`).join('')}</select>
+   <label>見到誰（可複選）</label>
+   <div class="chips">${D.people.length?D.people.map(p=>{const c=co(p.co);
+     return `<label class="ck"><input type="checkbox" class="v_pe" value="${p.id}" ${(e.pe||[]).includes(p.id)?'checked':''}><span>${esc(p.name)}${c?'·'+esc(c.name):''}</span></label>`}).join(''):'<span class="hint">還沒建人物</span>'}</div>
+
+   <div class="gh">拜訪檢核 — 這次問到了什麼</div>
+   <div class="alert info" style="margin-bottom:8px">問不完沒關係，<b>空白欄位會出現在日報的「還沒問到」</b>，下次補。</div>
+   ${list.map((q,i)=>`<label>${esc(q[0])}</label>
+     ${q[1]?`<div class="hint" style="margin-bottom:3px">${esc(q[1])}</div>`:''}
+     <textarea class="v_a" data-q="${esc(q[0])}">${esc((e.a||{})[q[0]])}</textarea>`).join('')}
+
+   <div class="gh">收尾</div>
+   <label>其他重點／自由記錄</label><textarea id="v_free">${esc(e.free)}</textarea>
+   <div class="g2">
+    <div><label>下一步（我要做什麼）</label><textarea id="v_next">${esc(e.next)}</textarea></div>
+    <div><label>下次接觸時間</label><input type="date" id="v_nd" value="${esc(e.nd)}"></div>
+   </div>
+   <label>要 Salesforce 更新什麼（會出現在日報）</label>
+   <textarea id="v_sf" placeholder="例：新增 Opportunity — F20 FMCS 監控主機，階段改為需求確認">${esc(e.sf)}</textarea>
+   <div class="row"><button class="btn p" id="viSave">${e.id?'儲存':'新增'}</button>${e.id?'<button class="btn" id="viCancel">取消</button>':''}</div>
+  </div>
+  <div class="card"><h2>拜訪紀錄 ${D.visits.length}</h2>
+   ${D.visits.length?[...D.visits].sort((a,b)=>(b.d||'').localeCompare(a.d||'')).map(v=>{
+     const c=co(v.co),f=fb(v.fa);
+     const filled=Object.values(v.a||{}).filter(x=>x&&x.trim()).length;
+     const total=(ASK[v.vt]||[]).length;
+     const ppl=(v.pe||[]).map(id=>{const p=D.people.find(x=>x.id===id);return p?esc(p.name):''}).filter(Boolean);
+     return `<div class="ent" style="--ec:var(--warn)">
+      <div class="ent-n">${esc(v.d)}　${c?esc(c.name):'（未指定公司）'}</div>
+      <div class="ent-s">${esc(v.vt)}${f?'｜'+esc(f.name):''}${ppl.length?'｜'+ppl.join('、'):''}</div>
+      <div class="mini"><span class="chip ${filled===total&&total?'c2':filled?'c3':'c7'}">問到 ${filled}/${total}</span>
+        ${v.nd?`<span class="chip c1">下次 ${esc(v.nd)}</span>`:''}</div>
+      ${v.next?`<div class="ent-b"><b>下一步：</b>${esc(v.next)}</div>`:''}
+      ${v.free?`<div class="ent-b">${esc(v.free).slice(0,120)}${v.free.length>120?'…':''}</div>`:''}
+      <div class="row"><button class="btn sm" data-vied="${v.id}">編輯</button><button class="btn sm d" data-videl="${v.id}">刪</button></div>
+     </div>`}).join(''):'<div class="empty">還沒有拜訪紀錄</div>'}
+  </div>`;
+}
+
+/* ============ 日報 ============ */
+function dayStr(off){const t=new Date();t.setDate(t.getDate()+off);return t.toISOString().slice(0,10)}
+
+function vDr(){
+  const d=edit.drDate||dayStr(0);
+  return `<div class="card">
+   <h2>日報 — 產出可貼進 Salesforce 的內容</h2>
+   <div class="g3">
+    <div><label>日期</label><input type="date" id="dr_d" value="${d}"></div>
+    <div><label>快選</label><select id="dr_q">
+      <option value="">—</option><option value="0">今天</option><option value="-1">昨天</option>
+      <option value="w">本週</option></select></div>
+    <div><label>&nbsp;</label><button class="btn p" id="drGen" style="width:100%">產生日報</button></div>
+   </div>
+   <div class="row"><button class="btn" id="drWeek">產生週報（給主管）</button><button class="btn" id="drCopy">複製</button></div>
+   <textarea id="drOut" style="min-height:300px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;line-height:1.7;margin-top:10px" placeholder="選日期後按「產生日報」"></textarea>
+   <div class="alert info" style="margin-top:10px">
+    <b>用法：</b>產生後複製 → 進 Salesforce 逐段貼。等你入職看到實際欄位，把畫面截圖給 Claude，可以把輸出格式調成跟你們的 SF 一模一樣。
+   </div>
+  </div>`;
+}
+
+function genReport(from,to,weekly){
+  const vs=D.visits.filter(v=>v.d>=from&&v.d<=to).sort((a,b)=>(a.d||'').localeCompare(b.d||''));
+  const lg=D.log.filter(x=>x.d>=from&&x.d<=to);
+  let s=weekly?`【週報】${from} ~ ${to}\n`:`【日報】${from}\n`;
+  s+=`拜訪 ${vs.length} 場｜資料更新 ${lg.length} 筆\n`;
+
+  if(vs.length){
+    s+=`\n═══ 拜訪紀錄（貼 Salesforce Activity）═══\n`;
+    vs.forEach(v=>{
+      const c=co(v.co),f=fb(v.fa);
+      const ppl=(v.pe||[]).map(id=>{const p=D.people.find(x=>x.id===id);return p?p.name+(p.title?'/'+p.title:''):''}).filter(Boolean);
+      s+=`\n─────────────────────\n`;
+      s+=`Account：${c?c.name:'（未指定）'}\n`;
+      s+=`Date：${v.d}　Type：${v.vt}\n`;
+      if(f)s+=`Fab：${f.name}\n`;
+      if(ppl.length)s+=`Contacts：${ppl.join('、')}\n`;
+      s+=`\nSubject：${v.vt}${c?' - '+c.name:''}\n`;
+      s+=`Comments：\n`;
+      const a=v.a||{};
+      Object.keys(a).forEach(k=>{if(a[k]&&a[k].trim())s+=`  ・${k}：${a[k].trim().replace(/\n/g,' ')}\n`});
+      if(v.free)s+=`  ・其他：${v.free.trim().replace(/\n/g,' ')}\n`;
+      if(v.next)s+=`\nNext Step：${v.next.trim().replace(/\n/g,' ')}\n`;
+      if(v.nd)s+=`Next Contact：${v.nd}\n`;
+      if(v.sf)s+=`\n★ SF 待更新：${v.sf.trim().replace(/\n/g,' ')}\n`;
+      const miss=(ASK[v.vt]||[]).map(q=>q[0]).filter(k=>!(a[k]&&a[k].trim()));
+      if(miss.length)s+=`\n（還沒問到：${miss.join('、')}）\n`;
+    });
+  }
+
+  const opUp=lg.filter(x=>x.k==='op');
+  if(opUp.length){
+    s+=`\n═══ 商機異動（貼 Salesforce Opportunity）═══\n`;
+    opUp.forEach(x=>{
+      const o=D.opps.find(y=>y.id===x.rid);
+      if(!o)return;
+      const c=co(o.co),f=fb(o.fa);
+      s+=`\nOpportunity：${o.t}\n  Account：${c?c.name:'—'}${f?'　Fab：'+f.name:''}\n`;
+      s+=`  Stage：${o.sg}${o.v?'　Amount：'+o.v:''}${o.pd?'　Product：'+o.pd:''}\n`;
+      if(o.next)s+=`  Next Step：${o.next.replace(/\n/g,' ')}\n`;
+      s+=`  （${x.a}）\n`;
+    });
+  }
+
+  const coUp=lg.filter(x=>x.k==='co');
+  if(coUp.length){
+    s+=`\n═══ 帳戶異動（貼 Salesforce Account）═══\n`;
+    const seen=new Set();
+    coUp.forEach(x=>{
+      if(seen.has(x.rid))return; seen.add(x.rid);
+      const c=co(x.rid); if(!c)return;
+      s+=`\nAccount：${c.name}${c.web?'　'+c.web:''}\n`;
+      s+=`  類型：${c.type}${c.loc?'　選型地：'+c.loc:''}${c.ipc?'　現用：'+c.ipc:''}\n`;
+      if(c.next)s+=`  下次時程：${c.next}\n`;
+      s+=`  （${x.a}）\n`;
+    });
+  }
+
+  const peUp=lg.filter(x=>x.k==='pe');
+  if(peUp.length){
+    s+=`\n═══ 聯絡人異動（貼 Salesforce Contact）═══\n`;
+    const seen=new Set();
+    peUp.forEach(x=>{
+      if(seen.has(x.rid))return; seen.add(x.rid);
+      const p=D.people.find(y=>y.id===x.rid); if(!p)return;
+      const c=co(p.co);
+      s+=`\nContact：${p.name}${p.title?' / '+p.title:''}\n`;
+      s+=`  Account：${c?c.name:'—'}${p.dept?'　Dept：'+p.dept:''}\n`;
+      if(p.tel||p.mail)s+=`  ${p.tel||''} ${p.mail||''}\n`;
+      s+=`  （${x.a}）\n`;
+    });
+  }
+
+  if(weekly){
+    const nx=D.visits.filter(v=>v.nd&&v.nd>to).sort((a,b)=>(a.nd||'').localeCompare(b.nd||''));
+    if(nx.length){
+      s+=`\n═══ 下週預定 ═══\n`;
+      nx.slice(0,12).forEach(v=>{const c=co(v.co);s+=`  ${v.nd}　${c?c.name:'—'}　${(v.next||'').replace(/\n/g,' ').slice(0,50)}\n`});
+    }
+    const gap=[];
+    const facGap=FAC.filter(x=>!D.companies.some(c=>(c.fac||[]).includes(x)));
+    if(facGap.length)gap.push(`廠務系統尚未覆蓋 ${facGap.length} 項：${facGap.slice(0,5).join('、')}`);
+    const noWin=D.companies.filter(c=>!D.people.some(p=>p.co===c.id));
+    if(noWin.length)gap.push(`${noWin.length} 家公司無窗口`);
+    if(gap.length)s+=`\n═══ 缺口 ═══\n`+gap.map(g=>'  ・'+g).join('\n')+'\n';
+  }
+
+  if(!vs.length&&!lg.length)s+=`\n（這段期間沒有紀錄）\n`;
+  return s;
+}
+
+function render(){
+  tabsHTML();
+  document.getElementById('view').innerHTML={inbox:vInbox,vi:vVi,dr:vDr,co:vCo,pe:vPe,fa:vFa,op:vOp,rp:vRp}[tab]();
+  bind();
+}
+function chk(cls){return [...document.querySelectorAll('.'+cls+':checked')].map(e=>e.value)}
+function logIt(k,rid,a){
+  D.log.push({id:uid('l'),d:new Date().toISOString().slice(0,10),k,rid,a,
+    ts:new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'})});
+  if(D.log.length>2000)D.log=D.log.slice(-2000);
+}
+function collectA(){const o={};document.querySelectorAll('.v_a').forEach(e=>{o[e.dataset.q]=e.value.trim()});return o}
+function val(id){const e=document.getElementById(id);return e?e.value.trim():''}
+
+function bind(){
+  const $=id=>document.getElementById(id);
+  if($('addRaw'))$('addRaw').onclick=()=>{
+    const t=val('raw');if(!t){alert('內容不能空白');return}
+    D.inbox.push({id:uid('i'),t,att:val('attn'),src:val('atts'),
+      d:new Date().toLocaleString('zh-TW',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}),done:false});
+    save();render()};
+  document.querySelectorAll('[data-ibdone]').forEach(b=>b.onclick=()=>{
+    const i=D.inbox.find(x=>x.id===b.dataset.ibdone);i.done=true;save();render()});
+  document.querySelectorAll('[data-ibdel]').forEach(b=>b.onclick=()=>{
+    D.inbox=D.inbox.filter(x=>x.id!==b.dataset.ibdel);save();render()});
+  const conv=(attr,dest,extra)=>document.querySelectorAll('['+attr+']').forEach(b=>b.onclick=()=>{
+    const i=D.inbox.find(x=>x.id===b.getAttribute(attr));
+    edit[dest]=Object.assign({note:i.t+(i.att?'\n附件：'+i.att:'')},extra||{});
+    i.done=true;save();tab=dest;render();window.scrollTo({top:0})});
+  conv('data-toco','co');conv('data-tope','pe');conv('data-tofa','fa');conv('data-toop','op',{sg:'情報'});conv('data-tovi','vi');
+
+  if($('p_bd'))$('p_bd').oninput=e=>{const z=zodiac(e.target.value);$('zodOut').textContent=z?'星座：'+z:'填了會自動判斷星座'};
+
+  if($('coSave'))$('coSave').onclick=()=>{
+    const n=val('c_name');if(!n){alert('要有公司名稱');return}
+    const o={id:(edit.co&&edit.co.id)||uid('c'),name:n,type:val('c_type'),web:val('c_web'),addr:val('c_addr'),
+      cap:val('c_cap'),emp:val('c_emp'),rev:val('c_rev'),fac:chk('c_fac'),proc:chk('c_proc'),fabs:chk('c_fb'),
+      loc:val('c_loc'),ipc:val('c_ipc'),adv:val('c_adv'),os:val('c_os'),next:val('c_next'),note:val('c_note')};
+    const isNew=!(edit.co&&edit.co.id);
+    if(!isNew)D.companies=D.companies.map(x=>x.id===o.id?o:x);else D.companies.push(o);
+    logIt('co',o.id,isNew?'新增公司':'更新公司資料');
+    edit.co=null;save();render()};
+  if($('coCancel'))$('coCancel').onclick=()=>{edit.co=null;render()};
+  document.querySelectorAll('[data-coed]').forEach(b=>b.onclick=()=>{
+    edit.co=co(b.dataset.coed);render();window.scrollTo({top:0,behavior:'smooth'})});
+  document.querySelectorAll('[data-codel]').forEach(b=>b.onclick=()=>{
+    if(!confirm('刪除？相關人物會變成未指定公司'))return;
+    D.companies=D.companies.filter(x=>x.id!==b.dataset.codel);
+    D.people.forEach(p=>{if(p.co===b.dataset.codel)p.co=''});save();render()});
+
+  if($('peSave'))$('peSave').onclick=()=>{
+    const n=val('p_name');if(!n){alert('要有姓名');return}
+    const o={id:(edit.pe&&edit.pe.id)||uid('p'),name:n,co:val('p_co'),dept:val('p_dept'),title:val('p_title'),
+      office:val('p_office'),tel:val('p_tel'),mail:val('p_mail'),roles:chk('p_role'),
+      stance:val('p_stance'),rel:+val('p_rel'),kpi:val('p_kpi'),bd:val('p_bd'),hobby:val('p_hobby'),note:val('p_note')};
+    const isNew=!(edit.pe&&edit.pe.id);
+    if(!isNew)D.people=D.people.map(x=>x.id===o.id?o:x);else D.people.push(o);
+    logIt('pe',o.id,isNew?'新增聯絡人':'更新聯絡人');
+    edit.pe=null;save();render()};
+  if($('peCancel'))$('peCancel').onclick=()=>{edit.pe=null;render()};
+  document.querySelectorAll('[data-peed]').forEach(b=>b.onclick=()=>{
+    edit.pe=D.people.find(x=>x.id===b.dataset.peed);render();window.scrollTo({top:0,behavior:'smooth'})});
+  document.querySelectorAll('[data-pedel]').forEach(b=>b.onclick=()=>{
+    if(!confirm('刪除？'))return;D.people=D.people.filter(x=>x.id!==b.dataset.pedel);save();render()});
+
+  if($('faSave'))$('faSave').onclick=()=>{
+    const n=val('f_name');if(!n){alert('要有廠區名稱');return}
+    const o={id:(edit.fa&&edit.fa.id)||uid('f'),name:n,loc:val('f_loc'),node:val('f_node'),
+      ph:val('f_ph'),mp:val('f_mp'),buy:val('f_buy'),adv:val('f_adv'),note:val('f_note')};
+    const isNew=!(edit.fa&&edit.fa.id);
+    if(!isNew)D.fabs=D.fabs.map(x=>x.id===o.id?o:x);else D.fabs.push(o);
+    logIt('fa',o.id,isNew?'新增廠區':'更新廠區');
+    edit.fa=null;save();render()};
+  if($('faCancel'))$('faCancel').onclick=()=>{edit.fa=null;render()};
+  document.querySelectorAll('[data-faed]').forEach(b=>b.onclick=()=>{
+    edit.fa=fb(b.dataset.faed);render();window.scrollTo({top:0,behavior:'smooth'})});
+  document.querySelectorAll('[data-fadel]').forEach(b=>b.onclick=()=>{
+    if(!confirm('刪除？'))return;D.fabs=D.fabs.filter(x=>x.id!==b.dataset.fadel);save();render()});
+
+  if($('opSave'))$('opSave').onclick=()=>{
+    const t=val('o_t');if(!t){alert('要有機會名稱');return}
+    const o={id:(edit.op&&edit.op.id)||uid('o'),t,co:val('o_co'),fa:val('o_fa'),sg:val('o_sg'),trk:val('o_trk'),
+      pd:val('o_pd'),v:val('o_v'),next:val('o_next'),note:val('o_note')};
+    const old=edit.op&&edit.op.id?D.opps.find(x=>x.id===edit.op.id):null;
+    const isNew=!old;
+    if(!isNew)D.opps=D.opps.map(x=>x.id===o.id?o:x);else D.opps.push(o);
+    logIt('op',o.id,isNew?'新增商機':(old&&old.sg!==o.sg?`階段 ${old.sg} → ${o.sg}`:'更新商機'));
+    edit.op=null;save();render()};
+  if($('opCancel'))$('opCancel').onclick=()=>{edit.op=null;render()};
+  document.querySelectorAll('[data-oped]').forEach(b=>b.onclick=()=>{
+    edit.op=D.opps.find(x=>x.id===b.dataset.oped);render();window.scrollTo({top:0,behavior:'smooth'})});
+  document.querySelectorAll('[data-opdel]').forEach(b=>b.onclick=()=>{
+    if(!confirm('刪除？'))return;D.opps=D.opps.filter(x=>x.id!==b.dataset.opdel);save();render()});
+
+  if($('v_vt'))$('v_vt').onchange=()=>{
+    const cur={id:(edit.vi&&edit.vi.id)||null,d:val('v_d'),vt:val('v_vt'),co:val('v_co'),fa:val('v_fa'),
+      pe:chk('v_pe'),a:collectA(),free:val('v_free'),next:val('v_next'),nd:val('v_nd'),sf:val('v_sf')};
+    edit.vi=cur;render();
+  };
+  if($('viSave'))$('viSave').onclick=()=>{
+    const d=val('v_d');if(!d){alert('要有日期');return}
+    const o={id:(edit.vi&&edit.vi.id)||uid('v'),d,vt:val('v_vt'),co:val('v_co'),fa:val('v_fa'),
+      pe:chk('v_pe'),a:collectA(),free:val('v_free'),next:val('v_next'),nd:val('v_nd'),sf:val('v_sf')};
+    const isNew=!(edit.vi&&edit.vi.id);
+    if(!isNew)D.visits=D.visits.map(x=>x.id===o.id?o:x);else D.visits.push(o);
+    edit.vi=null;save();render()};
+  if($('viCancel'))$('viCancel').onclick=()=>{edit.vi=null;render()};
+  document.querySelectorAll('[data-vied]').forEach(b=>b.onclick=()=>{
+    edit.vi=D.visits.find(x=>x.id===b.dataset.vied);render();window.scrollTo({top:0,behavior:'smooth'})});
+  document.querySelectorAll('[data-videl]').forEach(b=>b.onclick=()=>{
+    if(!confirm('刪除這筆拜訪？'))return;D.visits=D.visits.filter(x=>x.id!==b.dataset.videl);save();render()});
+
+  if($('dr_q'))$('dr_q').onchange=e=>{
+    const v=e.target.value;if(!v)return;
+    if(v==='w'){const t=new Date();const dow=(t.getDay()+6)%7;t.setDate(t.getDate()-dow);
+      $('dr_d').value=t.toISOString().slice(0,10);$('drOut').value=genReport($('dr_d').value,dayStr(0),true)}
+    else{$('dr_d').value=dayStr(+v);$('drOut').value=genReport($('dr_d').value,$('dr_d').value,false)}
+  };
+  if($('drGen'))$('drGen').onclick=()=>{const d=val('dr_d');edit.drDate=d;$('drOut').value=genReport(d,d,false)};
+  if($('drWeek'))$('drWeek').onclick=()=>{
+    const t=new Date();const dow=(t.getDay()+6)%7;const st=new Date(t);st.setDate(t.getDate()-dow);
+    $('drOut').value=genReport(st.toISOString().slice(0,10),dayStr(0),true)};
+  if($('drCopy'))$('drCopy').onclick=()=>{
+    const t=$('drOut').value;if(!t){alert('先產生內容');return}
+    if(navigator.clipboard&&navigator.clipboard.writeText)
+      navigator.clipboard.writeText(t).then(()=>{const b=$('drCopy');b.textContent='已複製';setTimeout(()=>b.textContent='複製',1200)},
+        ()=>{$('drOut').select();document.execCommand('copy')});
+    else{$('drOut').select();document.execCommand('copy')}};
+
+  if($('genTxt'))$('genTxt').onclick=()=>{
+    let s=`【台積電生態系情報】${new Date().toLocaleDateString('zh-TW')}\n`;
+    s+=`\n[廠區 ${D.fabs.length}]\n`+D.fabs.map(f=>` - ${f.name}｜${f.loc}｜${f.node}｜階段:${f.ph}｜量產:${f.mp}\n   標案:${f.buy||'—'}\n   研華:${f.adv||'—'}`).join('\n');
+    s+=`\n\n[廠務段公司]\n`+D.companies.filter(isFac).map(c=>{
+      const ppl=D.people.filter(p=>p.co===c.id);
+      return ` - ${c.name}｜${c.type}｜現用:${c.ipc||'?'}｜研華:${c.adv==='yes'?'是':'否'}\n   系統:${(c.fac||[]).join('、')}\n   下次:${c.next||'—'}｜窗口:${ppl.map(p=>p.name).join('、')||'無'}`}).join('\n');
+    s+=`\n\n[製程段公司]\n`+D.companies.filter(isProc).map(c=>
+      ` - ${c.name}｜選型:${c.loc||'?'}｜站別:${(c.proc||[]).join('、')}｜OS:${c.os||'?'}`).join('\n');
+    s+=`\n\n[機會 ${D.opps.length}]\n`+D.opps.map(o=>{const c=co(o.co),f=fb(o.fa);
+      return ` - [${o.sg}] ${o.t}｜${c?c.name:'—'}${f?'／'+f.name:''}｜${o.v||''}\n   下一步:${o.next||'—'}`}).join('\n');
+    $('out').value=s;$('out').scrollIntoView({behavior:'smooth',block:'center'})};
+}
+
+document.getElementById('bInbox').onclick=()=>{tab='inbox';render();
+  setTimeout(()=>{const r=document.getElementById('raw');if(r){r.focus();r.scrollIntoView({block:'center'})}},60)};
+document.getElementById('bExp').onclick=()=>{
+  const t=JSON.stringify(D);
+  if(navigator.clipboard&&navigator.clipboard.writeText)
+    navigator.clipboard.writeText(t).then(()=>alert('備份 JSON 已複製'),()=>prompt('複製保存：',t));
+  else prompt('複製保存：',t)};
+document.getElementById('bImp').onclick=()=>{
+  const t=prompt('貼上備份 JSON（或 Claude 產生的解析結果）：');if(!t)return;
+  try{const n=JSON.parse(t);
+    if(confirm('合併到現有資料？取消＝完全取代'))
+      ['inbox','companies','people','fabs','opps','visits','log'].forEach(k=>{if(n[k])D[k]=D[k].concat(n[k])});
+    else D=Object.assign({inbox:[],companies:[],people:[],fabs:[],opps:[],visits:[],log:[]},n);
+    save();render();alert('匯入完成')}catch(e){alert('格式不正確')}};
+(async()=>{await load();render();
+  if('serviceWorker' in navigator&&location.protocol==='https:'){
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  }
+})();
+</script>
+</body>
+</html>
